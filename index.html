@@ -32,8 +32,8 @@
         .math { color: #2563eb; }
         .dark .math { color: #60a5fa; }
         .chart-container { position: relative; height: 450px; width: 100%; }
-        /* Scrollbar personnalisée */
-        .custom-scrollbar::-webkit-scrollbar { height: 6px; }
+        /* Scrollbar personnalisée pour le tableau horizontal */
+        .custom-scrollbar::-webkit-scrollbar { height: 8px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
         .dark .custom-scrollbar::-webkit-scrollbar-thumb { background: #475569; }
@@ -45,9 +45,7 @@
     <!-- Bouton Theme Toggle -->
     <div class="fixed top-4 right-4 z-50">
         <button id="themeToggle" class="p-3 rounded-full bg-white dark:bg-slate-800 shadow-lg border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:scale-110 transition-transform">
-            <!-- Icon Soleil -->
             <svg id="sunIcon" class="w-6 h-6 hidden dark:block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 9H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
-            <!-- Icon Lune -->
             <svg id="moonIcon" class="w-6 h-6 dark:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
         </button>
     </div>
@@ -89,7 +87,7 @@
                     <ul class="space-y-2 text-sm">
                         <li><span class="font-semibold">Évolution :</span> $u_c$ chute vers $0\text{V}$.</li>
                         <li><span class="font-semibold">Courant :</span> Inversion du sens ($i < 0$) pour rétablir la neutralité.</li>
-                        <li><span class="font-semibold">Court-circuit :</span> Décharge instantanée si $R \approx 0$.</li>
+                        <li><span class="font-semibold">Court-circuit :</span> Décharge instantanée si $R \approx 0$ ($\tau \approx 0$).</li>
                     </ul>
                 </div>
             </div>
@@ -176,11 +174,11 @@
 
         <!-- Footer -->
         <footer class="bg-slate-900 dark:bg-black text-slate-300 dark:text-slate-500 p-10 rounded-3xl mt-12">
-            <div class="max-w-2xl mx-auto text-center">
+            <div class="max-w-2xl mx-auto text-center text-slate-400">
                 <h3 class="text-white font-bold mb-4 uppercase text-sm tracking-widest">Synthèse</h3>
                 <p class="text-sm mb-4 italic">
                     La relation $i = C \cdot \frac{du_c}{dt}$ est validée par l'allure des courbes expérimentales. 
-                    L'intensité du courant est directement proportionnelle à la vitesse de variation de la tension.
+                    L'intensité du courant est directement proportionnelle à la vitesse de variation de la tension aux bornes du condensateur.
                 </p>
                 <div class="h-px bg-slate-700 w-24 mx-auto my-6"></div>
                 <p class="text-[10px] uppercase tracking-widest">Compte-rendu de Physique - TP 8</p>
@@ -198,6 +196,7 @@
             updateChartTheme();
         });
 
+        // Données réelles extraites de Sheet2
         const rawData = [
             { t: 0, uc: 0, i: 800, p: "Charge" },
             { t: 10, uc: 1.54, i: 646, p: "Charge" },
@@ -236,11 +235,12 @@
             ucValues.push(d.uc);
             iValues.push(d.i);
 
+            // Remplissage horizontal du tableau (colonnes de données pour chaque ligne variable)
             rowT.innerHTML += `<td class="p-4 border-r border-slate-100 dark:border-slate-700 text-center font-medium min-w-[70px]">${d.t}</td>`;
             rowUc.innerHTML += `<td class="p-4 border-r border-slate-100 dark:border-slate-700 text-center text-blue-600 dark:text-blue-400 font-bold min-w-[70px]">${d.uc.toFixed(2)}</td>`;
             rowI.innerHTML += `<td class="p-4 border-r border-slate-100 dark:border-slate-700 text-center text-red-500 dark:text-red-400 min-w-[70px]">${d.i}</td>`;
             rowP.innerHTML += `<td class="p-4 border-r border-slate-100 dark:border-slate-700 text-center min-w-[70px]">
-                <span class="px-2 py-0.5 rounded-full text-[9px] font-bold uppercase ${d.p === 'Charge' ? 'bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-300' : 'bg-red-100 dark:bg-red-900 text-red-600 dark:text-red-300'}">${d.p === 'Charge' ? 'CH' : 'DÉ'}</span>
+                <span class="px-2 py-0.5 rounded-full text-[9px] font-bold uppercase ${d.p === 'Charge' ? 'bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-300' : 'bg-red-100 dark:bg-red-900/40 text-red-600 dark:text-red-300'}">${d.p === 'Charge' ? 'CH' : 'DÉ'}</span>
             </td>`;
         });
 
