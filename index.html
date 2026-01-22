@@ -78,7 +78,7 @@
                     <h3 class="font-bold text-blue-700 dark:text-blue-400 mb-3 uppercase text-sm tracking-widest">1. Charge (Pos. 1)</h3>
                     <ul class="space-y-2 text-sm">
                         <li><span class="font-semibold">Électrons :</span> Flux de l'armature A ($q_A > 0$) vers l'armature B ($q_B < 0$).</li>
-                        <li><span class="font-semibold">Stockage :</span> Tension maintenue hors circuit grâce au diélectrique.</li>
+                        <li><span class="font-semibold">Stockage :</span> Tension maintenue hors circuit grâce au diélectrique (isolant).</li>
                         <li><span class="font-semibold">Fin de charge :</span> Courant nul ($i=0$) quand $u_c = E$.</li>
                     </ul>
                 </div>
@@ -86,7 +86,7 @@
                     <h3 class="font-bold text-blue-700 dark:text-blue-400 mb-3 uppercase text-sm tracking-widest">2. Décharge (Pos. 2)</h3>
                     <ul class="space-y-2 text-sm">
                         <li><span class="font-semibold">Évolution :</span> $u_c$ chute vers $0\text{V}$.</li>
-                        <li><span class="font-semibold">Courant :</span> Inversion du sens ($i < 0$) pour rétablir la neutralité.</li>
+                        <li><span class="font-semibold">Courant :</span> Inversion du sens ($i < 0$) pour rétablir la neutralité électrique.</li>
                         <li><span class="font-semibold">Court-circuit :</span> Décharge instantanée si $R \approx 0$ ($\tau \approx 0$).</li>
                     </ul>
                 </div>
@@ -118,7 +118,7 @@
 
         <!-- IV. Tableau Horizontal -->
         <section class="mb-12">
-            <h2 class="text-2xl font-bold mb-6 text-slate-900 dark:text-white border-l-4 border-blue-600 pl-4">IV. Tableau des mesures complet</h2>
+            <h2 class="text-2xl font-bold mb-6 text-slate-900 dark:text-white border-l-4 border-blue-600 pl-4">IV. Tableau des mesures (Données Sheet2)</h2>
             <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
                 <div class="overflow-x-auto custom-scrollbar">
                     <table class="w-full text-left border-collapse min-w-max">
@@ -153,11 +153,11 @@
                 </ul>
                 <div class="mt-8 p-4 bg-white/10 rounded-xl text-sm italic">
                     Vérification Loi des Mailles : $E = u_c + R \cdot i$<br>
-                    À $t=40\text{s}$ : $4,58 + (10000 \cdot 342 \cdot 10^{-6}) = 8,00\text{V}$
+                    À $t=40\text{s}$ : $4,58 + (10000 \cdot 342 \cdot 10^{-6}) = 8,00\text{V}$ (Conforme).
                 </div>
             </div>
 
-            <div class="bg-white dark:bg-slate-800 p-8 rounded-3xl shadow-sm border border-slate-200 dark:border-slate-700">
+            <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-200 dark:border-slate-700">
                 <h2 class="text-xl font-bold mb-6 text-slate-900 dark:text-white uppercase tracking-wider">Constante de temps $\tau$</h2>
                 <div class="space-y-4">
                     <div class="p-4 bg-slate-50 dark:bg-slate-900 rounded-xl border-l-4 border-green-500">
@@ -196,7 +196,7 @@
             updateChartTheme();
         });
 
-        // Données d'intensité fournies (en µA)
+        // Données d'intensité fournies (en µA) - 42 points au total
         const iCharge = [800, 647, 523, 423, 342, 276, 223, 180, 146, 118, 95, 77, 62, 50, 41, 33, 27, 22, 18, 14, 12, 9, 7];
         const iDecharge = [-641, -518, -419, -339, -274, -221, -179, -145, -117, -95, -77, -62, -50, -40, -33, -26, -21, -17, -14];
 
@@ -204,7 +204,7 @@
         const E = 8;
         const rawData = [];
 
-        // Construction du tableau de données avec calcul de Uc (Loi des mailles)
+        // Construction du tableau de données avec calcul de Uc
         iCharge.forEach((val, idx) => {
             const t = idx * 10;
             const uc = E - (R * val * 1e-6);
@@ -214,7 +214,7 @@
         const offsetT = iCharge.length * 10;
         iDecharge.forEach((val, idx) => {
             const t = offsetT + (idx * 10);
-            const uc = - (R * val * 1e-6); // i est négatif, uc sera positif
+            const uc = - (R * val * 1e-6); 
             rawData.push({ t, i: val, uc, p: "Décharge" });
         });
 
