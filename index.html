@@ -11,6 +11,11 @@
         body { font-family: 'Inter', sans-serif; scroll-behavior: smooth; }
         .math { color: #2563eb; }
         .chart-container { position: relative; height: 450px; width: 100%; }
+        /* Style pour masquer la barre de défilement tout en permettant le scroll sur certains navigateurs */
+        .custom-scrollbar::-webkit-scrollbar { height: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
         @media (max-width: 640px) { .chart-container { height: 350px; } }
     </style>
 </head>
@@ -44,7 +49,7 @@
                     <h3 class="font-bold text-blue-700 mb-3 uppercase text-sm tracking-widest">1. Charge (Pos. 1)</h3>
                     <ul class="space-y-2 text-sm">
                         <li><span class="font-semibold">Électrons :</span> Flux de l'armature A ($q_A > 0$) vers l'armature B ($q_B < 0$).</li>
-                        <li><span class="font-semibold">Stockage :</span> Tension maintenue hors circuit grâce à l'isolant interne (diélectrique).</li>
+                        <li><span class="font-semibold">Stockage :</span> Tension maintenue hors circuit grâce au diélectrique.</li>
                         <li><span class="font-semibold">Fin de charge :</span> Courant nul ($i=0$) quand $u_c = E$.</li>
                     </ul>
                 </div>
@@ -52,8 +57,8 @@
                     <h3 class="font-bold text-blue-700 mb-3 uppercase text-sm tracking-widest">2. Décharge (Pos. 2)</h3>
                     <ul class="space-y-2 text-sm">
                         <li><span class="font-semibold">Évolution :</span> $u_c$ chute vers $0\text{V}$.</li>
-                        <li><span class="font-semibold">Courant :</span> Inversion du sens ($i < 0$) pour rétablir la neutralité électrique.</li>
-                        <li><span class="font-semibold">Court-circuit :</span> Décharge instantanée si $R \approx 0$ ($\tau \approx 0$).</li>
+                        <li><span class="font-semibold">Courant :</span> Inversion du sens ($i < 0$) pour rétablir la neutralité.</li>
+                        <li><span class="font-semibold">Court-circuit :</span> Décharge instantanée si $R \approx 0$.</li>
                     </ul>
                 </div>
             </div>
@@ -63,15 +68,14 @@
         <section class="mb-12">
             <h2 class="text-2xl font-bold mb-6 text-slate-900 border-l-4 border-blue-600 pl-4">II. Schéma et Montage</h2>
             <div class="bg-white p-4 rounded-2xl shadow-md border border-slate-100 text-center">
-                <!-- L'image est dans le même dossier -->
                 <img src="Tremendous Lahdi-Densor.png" alt="Montage expérimental réel" class="rounded-xl mx-auto max-h-[500px] shadow-sm mb-4">
-                <p class="text-sm text-slate-500 italic mt-2">Figure 1 : Montage réalisé sur Tinkerca</p>
+                <p class="text-sm text-slate-500 italic mt-2">Figure 1 : Montage réalisé sur Tinkercad</p>
             </div>
         </section>
 
         <!-- III. Courbe Expérimentale -->
         <section class="mb-12">
-            <h2 class="text-2xl font-bold mb-6 text-slate-900 border-l-4 border-blue-600 pl-4">III. Courbe Expérimentale (Données Réelles)</h2>
+            <h2 class="text-2xl font-bold mb-6 text-slate-900 border-l-4 border-blue-600 pl-4">III. Courbe Expérimentale</h2>
             <div class="bg-white p-6 rounded-2xl shadow-lg border border-slate-200">
                 <div class="chart-container">
                     <canvas id="rcChart"></canvas>
@@ -83,24 +87,34 @@
             </div>
         </section>
 
-        <!-- IV. Tableau des mesures -->
+        <!-- IV. Tableau Horizontal -->
         <section class="mb-12">
-            <h2 class="text-2xl font-bold mb-6 text-slate-900 border-l-4 border-blue-600 pl-4">IV. Données de mesure (Extrait Sheet2)</h2>
-            <div class="overflow-x-auto bg-white rounded-xl shadow-sm border border-slate-200">
-                <table class="w-full text-left border-collapse">
-                    <thead class="bg-slate-50 text-slate-600 font-semibold uppercase text-xs">
-                        <tr>
-                            <th class="p-4 border-b">Temps $t$ (s)</th>
-                            <th class="p-4 border-b">Tension $u_c$ (V)</th>
-                            <th class="p-4 border-b">Intensité $i$ (µA)</th>
-                            <th class="p-4 border-b">Phase</th>
-                        </tr>
-                    </thead>
-                    <tbody id="dataTable" class="text-sm">
-                        <!-- Rempli par JavaScript avec les données réelles -->
-                    </tbody>
-                </table>
+            <h2 class="text-2xl font-bold mb-6 text-slate-900 border-l-4 border-blue-600 pl-4">IV. Tableau des mesures (Données Sheet2)</h2>
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                <div class="overflow-x-auto custom-scrollbar">
+                    <table class="w-full text-left border-collapse min-w-max">
+                        <tbody class="text-sm">
+                            <tr id="rowT" class="border-b">
+                                <th class="p-4 bg-slate-50 text-slate-600 font-bold uppercase text-xs border-r sticky left-0 z-10 shadow-[2px_0_5px_rgba(0,0,0,0.05)]">Temps $t$ (s)</th>
+                                <!-- Cellules t remplies par JS -->
+                            </tr>
+                            <tr id="rowUc" class="border-b">
+                                <th class="p-4 bg-slate-50 text-slate-600 font-bold uppercase text-xs border-r sticky left-0 z-10 shadow-[2px_0_5px_rgba(0,0,0,0.05)]">Tension $u_c$ (V)</th>
+                                <!-- Cellules uc remplies par JS -->
+                            </tr>
+                            <tr id="rowI" class="border-b">
+                                <th class="p-4 bg-slate-50 text-slate-600 font-bold uppercase text-xs border-r sticky left-0 z-10 shadow-[2px_0_5px_rgba(0,0,0,0.05)]">Intensité $i$ (µA)</th>
+                                <!-- Cellules i remplies par JS -->
+                            </tr>
+                            <tr id="rowP">
+                                <th class="p-4 bg-slate-50 text-slate-600 font-bold uppercase text-xs border-r sticky left-0 z-10 shadow-[2px_0_5px_rgba(0,0,0,0.05)]">Phase</th>
+                                <!-- Cellules phase remplies par JS -->
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
+            <p class="mt-2 text-[10px] text-slate-400 italic text-right">Faites défiler horizontalement pour voir toutes les mesures.</p>
         </section>
 
         <!-- V. Analyse et Calculs -->
@@ -142,14 +156,13 @@
                 </div>
                 <div>
                     <h3 class="text-white font-bold mb-4 uppercase text-sm tracking-widest">Question Bonus</h3>
-                    <p class="text-sm italic">Application : Flash photo. Charge lente (grande résistance) et décharge éclair (faible résistance dans l'ampoule).</p>
+                    <p class="text-sm italic">Application : Flash photo. Charge lente (grande résistance) et décharge éclair (faible résistance).</p>
                 </div>
             </div>
         </footer>
     </div>
 
     <script>
-        // Données réelles extraites de Sheet2
         const rawData = [
             { t: 0, uc: 0, i: 800, p: "Charge" },
             { t: 10, uc: 1.54, i: 646, p: "Charge" },
@@ -174,7 +187,11 @@
             { t: 400, uc: 0.17, i: -17, p: "Décharge" }
         ];
 
-        const tableBody = document.getElementById('dataTable');
+        const rowT = document.getElementById('rowT');
+        const rowUc = document.getElementById('rowUc');
+        const rowI = document.getElementById('rowI');
+        const rowP = document.getElementById('rowP');
+
         const labels = [];
         const ucValues = [];
         const iValues = [];
@@ -184,15 +201,16 @@
             ucValues.push(d.uc);
             iValues.push(d.i);
 
-            const row = `<tr>
-                <td class="p-4 border-b font-medium">${d.t}</td>
-                <td class="p-4 border-b text-blue-600 font-semibold">${d.uc.toFixed(2)} V</td>
-                <td class="p-4 border-b text-red-500">${d.i} µA</td>
-                <td class="p-4 border-b"><span class="px-2 py-1 rounded-full text-[10px] font-bold uppercase ${d.p === 'Charge' ? 'bg-blue-100 text-blue-600' : 'bg-red-100 text-red-600'}">${d.p}</span></td>
-            </tr>`;
-            tableBody.innerHTML += row;
+            // Remplissage horizontal du tableau
+            rowT.innerHTML += `<td class="p-4 border-r text-center font-medium min-w-[70px]">${d.t}</td>`;
+            rowUc.innerHTML += `<td class="p-4 border-r text-center text-blue-600 font-bold min-w-[70px]">${d.uc.toFixed(2)}</td>`;
+            rowI.innerHTML += `<td class="p-4 border-r text-center text-red-500 min-w-[70px]">${d.i}</td>`;
+            rowP.innerHTML += `<td class="p-4 border-r text-center min-w-[70px]">
+                <span class="px-2 py-0.5 rounded-full text-[9px] font-bold uppercase ${d.p === 'Charge' ? 'bg-blue-100 text-blue-600' : 'bg-red-100 text-red-600'}">${d.p === 'Charge' ? 'CH' : 'DÉ'}</span>
+            </td>`;
         });
 
+        // Graphique Chart.js
         const ctx = document.getElementById('rcChart').getContext('2d');
         new Chart(ctx, {
             type: 'line',
@@ -228,12 +246,7 @@
                 interaction: { mode: 'index', intersect: false },
                 plugins: {
                     legend: { display: false },
-                    tooltip: { 
-                        backgroundColor: '#1e293b',
-                        padding: 12,
-                        titleFont: { size: 14 },
-                        bodyFont: { size: 13 }
-                    }
+                    tooltip: { backgroundColor: '#1e293b', padding: 12 }
                 },
                 scales: {
                     x: { title: { display: true, text: 'Temps (s)', font: { weight: 'bold' } } },
