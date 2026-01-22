@@ -1,11 +1,17 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="fr" class="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Compte-rendu TP 8 - Circuit RC</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Configuration Tailwind pour le mode sombre par classe
+        tailwind.config = {
+            darkMode: 'class',
+        }
+    </script>
     <!-- Bibliothèque MathJax pour l'affichage des formules mathématiques -->
     <script>
         window.MathJax = {
@@ -22,25 +28,36 @@
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
-        body { font-family: 'Inter', sans-serif; scroll-behavior: smooth; }
+        body { font-family: 'Inter', sans-serif; scroll-behavior: smooth; transition: background-color 0.3s, color 0.3s; }
         .math { color: #2563eb; }
+        .dark .math { color: #60a5fa; }
         .chart-container { position: relative; height: 450px; width: 100%; }
-        /* Style pour masquer la barre de défilement tout en permettant le scroll sur certains navigateurs */
+        /* Scrollbar personnalisée */
         .custom-scrollbar::-webkit-scrollbar { height: 6px; }
-        .custom-scrollbar::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        .dark .custom-scrollbar::-webkit-scrollbar-thumb { background: #475569; }
         @media (max-width: 640px) { .chart-container { height: 350px; } }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-800 leading-relaxed">
+<body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 leading-relaxed">
+
+    <!-- Bouton Theme Toggle -->
+    <div class="fixed top-4 right-4 z-50">
+        <button id="themeToggle" class="p-3 rounded-full bg-white dark:bg-slate-800 shadow-lg border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:scale-110 transition-transform">
+            <!-- Icon Soleil -->
+            <svg id="sunIcon" class="w-6 h-6 hidden dark:block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 9H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+            <!-- Icon Lune -->
+            <svg id="moonIcon" class="w-6 h-6 dark:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+        </button>
+    </div>
 
     <div class="max-w-4xl mx-auto px-4 py-12">
         <!-- Header -->
-        <header class="mb-12 border-b border-slate-200 pb-8 text-center">
-            <h1 class="text-4xl font-extrabold text-slate-900 mb-4">Compte-rendu de Physique - TP 8</h1>
-            <p class="text-xl text-blue-600 font-medium italic">Étude de la charge et de la décharge d'un condensateur</p>
-            <div class="mt-6 flex justify-center gap-4 text-sm font-semibold text-slate-500 uppercase tracking-wider">
+        <header class="mb-12 border-b border-slate-200 dark:border-slate-800 pb-8 text-center">
+            <h1 class="text-4xl font-extrabold text-slate-900 dark:text-white mb-4">Compte-rendu de Physique - TP 8</h1>
+            <p class="text-xl text-blue-600 dark:text-blue-400 font-medium italic">Étude de la charge et de la décharge d'un condensateur</p>
+            <div class="mt-6 flex justify-center gap-4 text-sm font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                 <span>BTS CIEL 1ère Année</span>
                 <span>•</span>
                 <span>Circuit RC</span>
@@ -48,8 +65,8 @@
         </header>
 
         <!-- Objectifs -->
-        <section class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 mb-8">
-            <h2 class="text-2xl font-bold mb-4 flex items-center text-slate-900">
+        <section class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 mb-8">
+            <h2 class="text-2xl font-bold mb-4 flex items-center text-slate-900 dark:text-white">
                 <span class="w-2 h-8 bg-blue-600 rounded-full mr-3"></span>Objectifs
             </h2>
             <p>Étude expérimentale d'un circuit RC, mesure de la constante de temps $\tau$ et vérification des relations fondamentales $i = C \cdot \frac{du_c}{dt}$ et $q = C \cdot u_c$.</p>
@@ -57,18 +74,18 @@
 
         <!-- I. Étude Qualitative -->
         <section class="mb-12">
-            <h2 class="text-2xl font-bold mb-6 text-slate-900 border-l-4 border-blue-600 pl-4">I. Étude Qualitative</h2>
+            <h2 class="text-2xl font-bold mb-6 text-slate-900 dark:text-white border-l-4 border-blue-600 pl-4">I. Étude Qualitative</h2>
             <div class="grid md:grid-cols-2 gap-6">
-                <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100">
-                    <h3 class="font-bold text-blue-700 mb-3 uppercase text-sm tracking-widest">1. Charge (Pos. 1)</h3>
+                <div class="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700">
+                    <h3 class="font-bold text-blue-700 dark:text-blue-400 mb-3 uppercase text-sm tracking-widest">1. Charge (Pos. 1)</h3>
                     <ul class="space-y-2 text-sm">
                         <li><span class="font-semibold">Électrons :</span> Flux de l'armature A ($q_A > 0$) vers l'armature B ($q_B < 0$).</li>
                         <li><span class="font-semibold">Stockage :</span> Tension maintenue hors circuit grâce au diélectrique.</li>
                         <li><span class="font-semibold">Fin de charge :</span> Courant nul ($i=0$) quand $u_c = E$.</li>
                     </ul>
                 </div>
-                <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100">
-                    <h3 class="font-bold text-blue-700 mb-3 uppercase text-sm tracking-widest">2. Décharge (Pos. 2)</h3>
+                <div class="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700">
+                    <h3 class="font-bold text-blue-700 dark:text-blue-400 mb-3 uppercase text-sm tracking-widest">2. Décharge (Pos. 2)</h3>
                     <ul class="space-y-2 text-sm">
                         <li><span class="font-semibold">Évolution :</span> $u_c$ chute vers $0\text{V}$.</li>
                         <li><span class="font-semibold">Courant :</span> Inversion du sens ($i < 0$) pour rétablir la neutralité.</li>
@@ -80,49 +97,45 @@
 
         <!-- II. Schéma et Montage -->
         <section class="mb-12">
-            <h2 class="text-2xl font-bold mb-6 text-slate-900 border-l-4 border-blue-600 pl-4">II. Schéma et Montage</h2>
-            <div class="bg-white p-4 rounded-2xl shadow-md border border-slate-100 text-center">
-                <img src="Tremendous Lahdi-Densor.png" alt="Montage expérimental réel" class="rounded-xl mx-auto max-h-[500px] shadow-sm mb-4">
-                <p class="text-sm text-slate-500 italic mt-2">Figure 1 : Montage réalisé sur Tinkercad</p>
+            <h2 class="text-2xl font-bold mb-6 text-slate-900 dark:text-white border-l-4 border-blue-600 pl-4">II. Schéma et Montage</h2>
+            <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl shadow-md border border-slate-100 dark:border-slate-700 text-center">
+                <img src="Tremendous Lahdi-Densor.png" alt="Montage expérimental réel" class="rounded-xl mx-auto max-h-[500px] shadow-sm mb-4 filter dark:brightness-90">
+                <p class="text-sm text-slate-500 dark:text-slate-400 italic mt-2">Figure 1 : Montage réalisé sur Tinkercad</p>
             </div>
         </section>
 
         <!-- III. Courbe Expérimentale -->
         <section class="mb-12">
-            <h2 class="text-2xl font-bold mb-6 text-slate-900 border-l-4 border-blue-600 pl-4">III. Courbe Expérimentale</h2>
-            <div class="bg-white p-6 rounded-2xl shadow-lg border border-slate-200">
+            <h2 class="text-2xl font-bold mb-6 text-slate-900 dark:text-white border-l-4 border-blue-600 pl-4">III. Courbe Expérimentale</h2>
+            <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700">
                 <div class="chart-container">
                     <canvas id="rcChart"></canvas>
                 </div>
-                <div class="mt-4 flex flex-wrap justify-center gap-6 text-sm">
-                    <span class="flex items-center"><span class="w-3 h-3 bg-blue-600 rounded-full mr-2"></span> Tension $u_c$ (V)</span>
-                    <span class="flex items-center"><span class="w-3 h-3 bg-red-500 rounded-full mr-2"></span> Intensité $i$ (µA)</span>
+                <div class="mt-4 flex flex-wrap justify-center gap-6 text-sm font-medium">
+                    <span class="flex items-center"><span class="w-3 h-3 bg-blue-600 dark:bg-blue-500 rounded-full mr-2"></span> Tension $u_c$ (V)</span>
+                    <span class="flex items-center"><span class="w-3 h-3 bg-red-500 dark:bg-red-400 rounded-full mr-2"></span> Intensité $i$ (µA)</span>
                 </div>
             </div>
         </section>
 
         <!-- IV. Tableau Horizontal -->
         <section class="mb-12">
-            <h2 class="text-2xl font-bold mb-6 text-slate-900 border-l-4 border-blue-600 pl-4">IV. Tableau des mesures (Données Sheet2)</h2>
-            <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+            <h2 class="text-2xl font-bold mb-6 text-slate-900 dark:text-white border-l-4 border-blue-600 pl-4">IV. Tableau des mesures (Données Sheet2)</h2>
+            <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
                 <div class="overflow-x-auto custom-scrollbar">
                     <table class="w-full text-left border-collapse min-w-max">
                         <tbody class="text-sm">
-                            <tr id="rowT" class="border-b">
-                                <th class="p-4 bg-slate-50 text-slate-600 font-bold uppercase text-xs border-r sticky left-0 z-10 shadow-[2px_0_5px_rgba(0,0,0,0.05)]">Temps $t$ (s)</th>
-                                <!-- Cellules t remplies par JS -->
+                            <tr id="rowT" class="border-b border-slate-100 dark:border-slate-700">
+                                <th class="p-4 bg-slate-50 dark:bg-slate-900/50 text-slate-600 dark:text-slate-400 font-bold uppercase text-xs border-r border-slate-100 dark:border-slate-700 sticky left-0 z-10">Temps $t$ (s)</th>
                             </tr>
-                            <tr id="rowUc" class="border-b">
-                                <th class="p-4 bg-slate-50 text-slate-600 font-bold uppercase text-xs border-r sticky left-0 z-10 shadow-[2px_0_5px_rgba(0,0,0,0.05)]">Tension $u_c$ (V)</th>
-                                <!-- Cellules uc remplies par JS -->
+                            <tr id="rowUc" class="border-b border-slate-100 dark:border-slate-700">
+                                <th class="p-4 bg-slate-50 dark:bg-slate-900/50 text-slate-600 dark:text-slate-400 font-bold uppercase text-xs border-r border-slate-100 dark:border-slate-700 sticky left-0 z-10">Tension $u_c$ (V)</th>
                             </tr>
-                            <tr id="rowI" class="border-b">
-                                <th class="p-4 bg-slate-50 text-slate-600 font-bold uppercase text-xs border-r sticky left-0 z-10 shadow-[2px_0_5px_rgba(0,0,0,0.05)]">Intensité $i$ (µA)</th>
-                                <!-- Cellules i remplies par JS -->
+                            <tr id="rowI" class="border-b border-slate-100 dark:border-slate-700">
+                                <th class="p-4 bg-slate-50 dark:bg-slate-900/50 text-slate-600 dark:text-slate-400 font-bold uppercase text-xs border-r border-slate-100 dark:border-slate-700 sticky left-0 z-10">Intensité $i$ (µA)</th>
                             </tr>
                             <tr id="rowP">
-                                <th class="p-4 bg-slate-50 text-slate-600 font-bold uppercase text-xs border-r sticky left-0 z-10 shadow-[2px_0_5px_rgba(0,0,0,0.05)]">Phase</th>
-                                <!-- Cellules phase remplies par JS -->
+                                <th class="p-4 bg-slate-50 dark:bg-slate-900/50 text-slate-600 dark:text-slate-400 font-bold uppercase text-xs border-r border-slate-100 dark:border-slate-700 sticky left-0 z-10">Phase</th>
                             </tr>
                         </tbody>
                     </table>
@@ -133,7 +146,7 @@
 
         <!-- V. Analyse et Calculs -->
         <section class="grid md:grid-cols-2 gap-8 mb-12">
-            <div class="bg-blue-600 text-white p-8 rounded-3xl shadow-xl">
+            <div class="bg-blue-600 dark:bg-blue-700 text-white p-8 rounded-3xl shadow-xl">
                 <h2 class="text-xl font-bold mb-6 uppercase tracking-wider">Paramètres fixes</h2>
                 <ul class="space-y-4 font-medium">
                     <li class="flex justify-between border-b border-blue-500 pb-2"><span>Générateur ($E$)</span> <span>$8,00\text{ V}$</span></li>
@@ -146,37 +159,45 @@
                 </div>
             </div>
 
-            <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-200">
-                <h2 class="text-xl font-bold mb-6 text-slate-900 uppercase tracking-wider">Constante de temps $\tau$</h2>
+            <div class="bg-white dark:bg-slate-800 p-8 rounded-3xl shadow-sm border border-slate-200 dark:border-slate-700">
+                <h2 class="text-xl font-bold mb-6 text-slate-900 dark:text-white uppercase tracking-wider">Constante de temps $\tau$</h2>
                 <div class="space-y-4">
-                    <div class="p-4 bg-slate-50 rounded-xl border-l-4 border-green-500">
+                    <div class="p-4 bg-slate-50 dark:bg-slate-900 rounded-xl border-l-4 border-green-500">
                         <span class="block text-xs font-bold text-slate-400 uppercase">Mesure Graphique (63%)</span>
                         <span class="text-lg font-bold">$\approx 47,0\text{ s}$</span>
                     </div>
-                    <div class="p-4 bg-slate-50 rounded-xl border-l-4 border-blue-600">
+                    <div class="p-4 bg-slate-50 dark:bg-slate-900 rounded-xl border-l-4 border-blue-600">
                         <span class="block text-xs font-bold text-slate-400 uppercase">Calcul Théorique ($R \cdot C$)</span>
-                        <span class="text-lg font-bold text-blue-600">$47,0\text{ s}$</span>
+                        <span class="text-lg font-bold text-blue-600 dark:text-blue-400">$47,0\text{ s}$</span>
                     </div>
                 </div>
             </div>
         </section>
 
         <!-- Footer -->
-        <footer class="bg-slate-900 text-slate-300 p-10 rounded-3xl mt-12">
-            <div class="grid md:grid-cols-2 gap-8">
-                <div>
-                    <h3 class="text-white font-bold mb-4 uppercase text-sm tracking-widest">Synthèse</h3>
-                    <p class="text-sm mb-4">La relation $i = C \cdot \frac{du_c}{dt}$ est validée par l'allure des courbes. L'intensité est proportionnelle à la vitesse de variation de la tension.</p>
-                </div>
-                <div>
-                    <h3 class="text-white font-bold mb-4 uppercase text-sm tracking-widest">Question Bonus</h3>
-                    <p class="text-sm italic">Application : Flash photo. Charge lente (grande résistance) et décharge éclair (faible résistance).</p>
-                </div>
+        <footer class="bg-slate-900 dark:bg-black text-slate-300 dark:text-slate-500 p-10 rounded-3xl mt-12">
+            <div class="max-w-2xl mx-auto text-center">
+                <h3 class="text-white font-bold mb-4 uppercase text-sm tracking-widest">Synthèse</h3>
+                <p class="text-sm mb-4 italic">
+                    La relation $i = C \cdot \frac{du_c}{dt}$ est validée par l'allure des courbes expérimentales. 
+                    L'intensité du courant est directement proportionnelle à la vitesse de variation de la tension.
+                </p>
+                <div class="h-px bg-slate-700 w-24 mx-auto my-6"></div>
+                <p class="text-[10px] uppercase tracking-widest">Compte-rendu de Physique - TP 8</p>
             </div>
         </footer>
     </div>
 
     <script>
+        // Gestion du Theme
+        const themeToggle = document.getElementById('themeToggle');
+        const html = document.documentElement;
+
+        themeToggle.addEventListener('click', () => {
+            html.classList.toggle('dark');
+            updateChartTheme();
+        });
+
         const rawData = [
             { t: 0, uc: 0, i: 800, p: "Charge" },
             { t: 10, uc: 1.54, i: 646, p: "Charge" },
@@ -215,18 +236,17 @@
             ucValues.push(d.uc);
             iValues.push(d.i);
 
-            // Remplissage horizontal du tableau
-            rowT.innerHTML += `<td class="p-4 border-r text-center font-medium min-w-[70px]">${d.t}</td>`;
-            rowUc.innerHTML += `<td class="p-4 border-r text-center text-blue-600 font-bold min-w-[70px]">${d.uc.toFixed(2)}</td>`;
-            rowI.innerHTML += `<td class="p-4 border-r text-center text-red-500 min-w-[70px]">${d.i}</td>`;
-            rowP.innerHTML += `<td class="p-4 border-r text-center min-w-[70px]">
-                <span class="px-2 py-0.5 rounded-full text-[9px] font-bold uppercase ${d.p === 'Charge' ? 'bg-blue-100 text-blue-600' : 'bg-red-100 text-red-600'}">${d.p === 'Charge' ? 'CH' : 'DÉ'}</span>
+            rowT.innerHTML += `<td class="p-4 border-r border-slate-100 dark:border-slate-700 text-center font-medium min-w-[70px]">${d.t}</td>`;
+            rowUc.innerHTML += `<td class="p-4 border-r border-slate-100 dark:border-slate-700 text-center text-blue-600 dark:text-blue-400 font-bold min-w-[70px]">${d.uc.toFixed(2)}</td>`;
+            rowI.innerHTML += `<td class="p-4 border-r border-slate-100 dark:border-slate-700 text-center text-red-500 dark:text-red-400 min-w-[70px]">${d.i}</td>`;
+            rowP.innerHTML += `<td class="p-4 border-r border-slate-100 dark:border-slate-700 text-center min-w-[70px]">
+                <span class="px-2 py-0.5 rounded-full text-[9px] font-bold uppercase ${d.p === 'Charge' ? 'bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-300' : 'bg-red-100 dark:bg-red-900 text-red-600 dark:text-red-300'}">${d.p === 'Charge' ? 'CH' : 'DÉ'}</span>
             </td>`;
         });
 
         // Graphique Chart.js
         const ctx = document.getElementById('rcChart').getContext('2d');
-        new Chart(ctx, {
+        let chartInstance = new Chart(ctx, {
             type: 'line',
             data: {
                 labels: labels,
@@ -263,21 +283,53 @@
                     tooltip: { backgroundColor: '#1e293b', padding: 12 }
                 },
                 scales: {
-                    x: { title: { display: true, text: 'Temps (s)', font: { weight: 'bold' } } },
+                    x: { 
+                        title: { display: true, text: 'Temps (s)', font: { weight: 'bold' } },
+                        ticks: { color: '#64748b' },
+                        grid: { color: 'rgba(100, 116, 139, 0.1)' }
+                    },
                     y: { 
                         type: 'linear', display: true, position: 'left',
                         title: { display: true, text: 'Tension (V)', font: { weight: 'bold' } },
+                        ticks: { color: '#64748b' },
+                        grid: { color: 'rgba(100, 116, 139, 0.1)' },
                         min: 0, max: 9
                     },
                     y1: {
                         type: 'linear', display: true, position: 'right',
                         title: { display: true, text: 'Intensité (µA)', font: { weight: 'bold' } },
+                        ticks: { color: '#64748b' },
                         grid: { drawOnChartArea: false },
                         min: -850, max: 850
                     }
                 }
             }
         });
+
+        function updateChartTheme() {
+            const isDark = html.classList.contains('dark');
+            const color = isDark ? '#94a3b8' : '#64748b';
+            const gridColor = isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(100, 116, 139, 0.1)';
+
+            chartInstance.options.scales.x.ticks.color = color;
+            chartInstance.options.scales.x.title.color = isDark ? '#f8fafc' : '#1e293b';
+            chartInstance.options.scales.x.grid.color = gridColor;
+
+            chartInstance.options.scales.y.ticks.color = color;
+            chartInstance.options.scales.y.title.color = isDark ? '#f8fafc' : '#1e293b';
+            chartInstance.options.scales.y.grid.color = gridColor;
+
+            chartInstance.options.scales.y1.ticks.color = color;
+            chartInstance.options.scales.y1.title.color = isDark ? '#f8fafc' : '#1e293b';
+            
+            chartInstance.update();
+        }
+
+        // Init thème graphique au chargement
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            html.classList.add('dark');
+            updateChartTheme();
+        }
     </script>
 </body>
 </html>
