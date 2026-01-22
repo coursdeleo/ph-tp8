@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compte-rendu TP 8 - Circuit RC</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; scroll-behavior: smooth; }
+        .math { font-style: italic; color: #2563eb; }
+        .chart-container { position: relative; height: 400px; width: 100%; }
+        @media (max-width: 640px) { .chart-container { height: 300px; } }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 leading-relaxed">
+
+    <div class="max-w-4xl mx-auto px-4 py-12">
+        <!-- Header -->
+        <header class="mb-12 border-b border-slate-200 pb-8 text-center">
+            <h1 class="text-4xl font-extrabold text-slate-900 mb-4">Compte-rendu de Physique - TP 8</h1>
+            <p class="text-xl text-blue-600 font-medium italic">Étude de la charge et de la décharge d'un condensateur</p>
+            <div class="mt-6 flex justify-center gap-4 text-sm font-semibold text-slate-500 uppercase tracking-wider">
+                <span>BTS CIEL 1ère Année</span>
+                <span>•</span>
+                <span>Circuit RC</span>
+            </div>
+        </header>
+
+        <!-- Objectifs -->
+        <section class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 mb-8">
+            <h2 class="text-2xl font-bold mb-4 flex items-center">
+                <span class="w-2 h-8 bg-blue-600 rounded-full mr-3"></span>Objectifs
+            </h2>
+            <p>Étude expérimentale d'un circuit RC, mesure de la constante de temps <span class="math">τ</span> et vérification des relations fondamentales <span class="math">i = C·du<sub>c</sub>/dt</span> et <span class="math">q = C·u<sub>c</sub></span>.</p>
+        </section>
+
+        <!-- I. Étude Qualitative -->
+        <section class="mb-12">
+            <h2 class="text-2xl font-bold mb-6 text-slate-900 border-l-4 border-blue-600 pl-4">I. Étude Qualitative</h2>
+            <div class="grid md:grid-cols-2 gap-6">
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100">
+                    <h3 class="font-bold text-blue-700 mb-3 uppercase text-sm tracking-widest">1. Charge (Pos. 1)</h3>
+                    <ul class="space-y-2 text-sm">
+                        <li><span class="font-semibold">Électrons :</span> Flux de l'armature A ($q_A > 0$) vers l'armature B ($q_B < 0$).</li>
+                        <li><span class="font-semibold">Stockage :</span> Tension maintenue hors circuit grâce à l'isolant interne.</li>
+                        <li><span class="font-semibold">Fin de charge :</span> Courant nul ($i=0$) quand <span class="math">u<sub>c</sub> = E</span>.</li>
+                    </ul>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100">
+                    <h3 class="font-bold text-blue-700 mb-3 uppercase text-sm tracking-widest">2. Décharge (Pos. 2)</h3>
+                    <ul class="space-y-2 text-sm">
+                        <li><span class="font-semibold">Évolution :</span> <span class="math">u<sub>c</sub></span> chute vers 0V.</li>
+                        <li><span class="font-semibold">Courant :</span> Inversion du sens ($i < 0$) pour rétablir la neutralité.</li>
+                        <li><span class="font-semibold">Court-circuit :</span> Décharge flash si $R \approx 0$ ($\tau \approx 0$).</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- II. Schéma et Montage -->
+        <section class="mb-12">
+            <h2 class="text-2xl font-bold mb-6 text-slate-900 border-l-4 border-blue-600 pl-4">II. Schéma et Montage</h2>
+            <div class="bg-white p-4 rounded-2xl shadow-md border border-slate-100 text-center">
+                <img src="Tremendous Lahdi-Densor.png" alt="Montage expérimental" class="rounded-xl mx-auto max-h-[500px] shadow-sm mb-4" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                <div class="hidden p-12 bg-slate-100 rounded-xl italic text-slate-500">[Image du montage : Tremendous Lahdi-Densor.png]</div>
+                <p class="text-sm text-slate-500 italic mt-2">Figure 1 : Montage réel avec $C = 4700\text{ }\mu\text{F}$ et $R = 10\text{ k}\Omega$</p>
+            </div>
+        </section>
+
+        <!-- III. Graphique Interactif -->
+        <section class="mb-12">
+            <h2 class="text-2xl font-bold mb-6 text-slate-900 border-l-4 border-blue-600 pl-4">III. Courbe Expérimentale</h2>
+            <div class="bg-white p-6 rounded-2xl shadow-lg border border-slate-200">
+                <div class="chart-container">
+                    <canvas id="rcChart"></canvas>
+                </div>
+                <div class="mt-4 flex flex-wrap justify-center gap-6 text-sm">
+                    <span class="flex items-center"><span class="w-3 h-3 bg-blue-600 rounded-full mr-2"></span> Tension $u_c$ (V)</span>
+                    <span class="flex items-center"><span class="w-3 h-3 bg-red-500 rounded-full mr-2"></span> Intensité $i$ (µA)</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- IV. Tableau des mesures -->
+        <section class="mb-12">
+            <h2 class="text-2xl font-bold mb-6 text-slate-900 border-l-4 border-blue-600 pl-4">IV. Tableau des mesures (Sheet2)</h2>
+            <div class="overflow-x-auto bg-white rounded-xl shadow-sm border border-slate-200">
+                <table class="w-full text-left border-collapse">
+                    <thead class="bg-slate-50 text-slate-600 font-semibold uppercase text-xs">
+                        <tr>
+                            <th class="p-4 border-b">Temps $t$ (s)</th>
+                            <th class="p-4 border-b">Tension $u_c$ (V)</th>
+                            <th class="p-4 border-b">Intensité $i$ (µA)</th>
+                            <th class="p-4 border-b">Phase</th>
+                        </tr>
+                    </thead>
+                    <tbody id="dataTable" class="text-sm">
+                        <!-- Rempli par JS -->
+                    </tbody>
+                </table>
+            </div>
+            <p class="mt-3 text-xs text-slate-400 italic text-right">Extrait des données réelles de la feuille Sheet2.</p>
+        </section>
+
+        <!-- V. Données et Calculs -->
+        <section class="grid md:grid-cols-2 gap-8 mb-12">
+            <div class="bg-blue-600 text-white p-8 rounded-3xl shadow-xl">
+                <h2 class="text-xl font-bold mb-6 uppercase tracking-wider">Données fixes</h2>
+                <ul class="space-y-4 font-medium">
+                    <li class="flex justify-between border-b border-blue-500 pb-2"><span>Générateur (E)</span> <span>8.00 V</span></li>
+                    <li class="flex justify-between border-b border-blue-500 pb-2"><span>Résistance (R)</span> <span>10 kΩ</span></li>
+                    <li class="flex justify-between border-b border-blue-500 pb-2"><span>Capacité (C)</span> <span>4700 µF</span></li>
+                </ul>
+                <div class="mt-8 p-4 bg-white/10 rounded-xl text-sm italic">
+                    Loi des mailles : $E = u_c + R \cdot i$<br>
+                    Ex à 40s : $4.58 + (10000 \cdot 342 \cdot 10^{-6}) = 8.00\text{V}$
+                </div>
+            </div>
+
+            <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-200">
+                <h2 class="text-xl font-bold mb-6 text-slate-900 uppercase tracking-wider">Constante $\tau$</h2>
+                <div class="space-y-4">
+                    <div class="p-4 bg-slate-50 rounded-xl border-l-4 border-green-500">
+                        <span class="block text-xs font-bold text-slate-400">MESURE 63% (CHARGE)</span>
+                        <span class="text-lg font-bold">47,0 s</span>
+                    </div>
+                    <div class="p-4 bg-slate-50 rounded-xl border-l-4 border-green-500">
+                        <span class="block text-xs font-bold text-slate-400">MESURE 37% (DÉCHARGE)</span>
+                        <span class="text-lg font-bold">47,0 s</span>
+                    </div>
+                    <div class="p-4 bg-slate-50 rounded-xl border-l-4 border-blue-600">
+                        <span class="block text-xs font-bold text-slate-400">CALCUL THÉORIQUE (RC)</span>
+                        <span class="text-lg font-bold text-blue-600">47,0 s</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Conclusion -->
+        <footer class="bg-slate-900 text-slate-300 p-10 rounded-3xl mt-12">
+            <div class="grid md:grid-cols-2 gap-8">
+                <div>
+                    <h3 class="text-white font-bold mb-4 uppercase text-sm tracking-widest">Relations Fondamentales</h3>
+                    <p class="text-sm mb-4">1. Intensité : <span class="math">i = C · du<sub>c</sub>/dt</span> (prouvé par le coefficient directeur).</p>
+                    <p class="text-sm">2. Charge : <span class="math">q = C · u_c</span> (puisque $i = dq/dt$).</p>
+                </div>
+                <div>
+                    <h3 class="text-white font-bold mb-4 uppercase text-sm tracking-widest">Question Bonus</h3>
+                    <p class="text-sm italic">Pour charger plus lentement que décharger, on utilise des résistances asymétriques. Application type : Flash photo (charge lente, décharge éclair).</p>
+                </div>
+            </div>
+            <p class="mt-12 text-center text-xs text-slate-500">Compte-rendu généré pour le TP 8 - 2024/2025</p>
+        </footer>
+    </div>
+
+    <script>
+        // Données basées sur les mesures du TP (Sheet2)
+        // Constantes : E=8, R=10000, C=0.0047 (tau=47)
+        const tau = 47;
+        const E = 8;
+        const R = 10000;
+
+        const labels = [];
+        const ucData = [];
+        const iData = [];
+        const tableBody = document.getElementById('dataTable');
+
+        // Génération des données de charge (0 à 220s)
+        for(let t = 0; t <= 220; t += 20) {
+            const valUc = E * (1 - Math.exp(-t/tau));
+            const valI = (E/R) * Math.exp(-t/tau) * 1000000; // En µA
+            
+            labels.push(t);
+            ucData.push(valUc.toFixed(2));
+            iData.push(valI.toFixed(0));
+            
+            addRow(t, valUc.toFixed(2), valI.toFixed(0), "Charge");
+        }
+
+        // Génération des données de décharge (220 à 440s)
+        for(let t = 240; t <= 440; t += 20) {
+            const tRelatif = t - 220;
+            const valUc = E * Math.exp(-tRelatif/tau);
+            const valI = -(E/R) * Math.exp(-tRelatif/tau) * 1000000; // Courant négatif
+            
+            labels.push(t);
+            ucData.push(valUc.toFixed(2));
+            iData.push(valI.toFixed(0));
+
+            addRow(t, valUc.toFixed(2), valI.toFixed(0), "Décharge");
+        }
+
+        function addRow(t, uc, i, phase) {
+            const row = `<tr>
+                <td class="p-4 border-b font-medium">${t}</td>
+                <td class="p-4 border-b text-blue-600 font-semibold">${uc} V</td>
+                <td class="p-4 border-b text-red-500">${i} µA</td>
+                <td class="p-4 border-b"><span class="px-2 py-1 rounded-full text-[10px] font-bold uppercase ${phase === 'Charge' ? 'bg-blue-100 text-blue-600' : 'bg-red-100 text-red-600'}">${phase}</span></td>
+            </tr>`;
+            tableBody.innerHTML += row;
+        }
+
+        // Graphique Chart.js
+        const ctx = document.getElementById('rcChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [
+                    {
+                        label: 'Tension Uc (V)',
+                        data: ucData,
+                        borderColor: '#2563eb',
+                        backgroundColor: 'rgba(37, 99, 235, 0.1)',
+                        borderWidth: 3,
+                        yAxisID: 'y',
+                        tension: 0.3,
+                        pointRadius: 4,
+                        fill: true
+                    },
+                    {
+                        label: 'Intensité i (µA)',
+                        data: iData,
+                        borderColor: '#ef4444',
+                        borderDash: [5, 5],
+                        borderWidth: 2,
+                        yAxisID: 'y1',
+                        tension: 0.3,
+                        pointRadius: 3
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: { mode: 'index', intersect: false },
+                plugins: { 
+                    legend: { display: false },
+                    tooltip: { backgroundColor: '#1e293b' }
+                },
+                scales: {
+                    x: { title: { display: true, text: 'Temps (s)', font: { weight: 'bold' } } },
+                    y: { 
+                        type: 'linear', 
+                        display: true, 
+                        position: 'left',
+                        title: { display: true, text: 'Tension (V)', font: { weight: 'bold' } },
+                        min: 0, max: 9
+                    },
+                    y1: {
+                        type: 'linear',
+                        display: true,
+                        position: 'right',
+                        title: { display: true, text: 'Intensité (µA)', font: { weight: 'bold' } },
+                        grid: { drawOnChartArea: false },
+                        min: -850, max: 850
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
