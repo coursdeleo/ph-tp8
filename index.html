@@ -118,7 +118,7 @@
 
         <!-- IV. Tableau Horizontal -->
         <section class="mb-12">
-            <h2 class="text-2xl font-bold mb-6 text-slate-900 dark:text-white border-l-4 border-blue-600 pl-4">IV. Tableau des mesures (Données Sheet2)</h2>
+            <h2 class="text-2xl font-bold mb-6 text-slate-900 dark:text-white border-l-4 border-blue-600 pl-4">IV. Tableau des mesures complet</h2>
             <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
                 <div class="overflow-x-auto custom-scrollbar">
                     <table class="w-full text-left border-collapse min-w-max">
@@ -139,7 +139,7 @@
                     </table>
                 </div>
             </div>
-            <p class="mt-2 text-[10px] text-slate-400 italic text-right">Faites défiler horizontalement pour voir toutes les mesures.</p>
+            <p class="mt-2 text-[10px] text-slate-400 italic text-right">Faites défiler horizontalement pour voir les 42 points de mesure.</p>
         </section>
 
         <!-- V. Analyse et Calculs -->
@@ -196,30 +196,27 @@
             updateChartTheme();
         });
 
-        // Données réelles extraites de Sheet2
-        const rawData = [
-            { t: 0, uc: 0, i: 800, p: "Charge" },
-            { t: 10, uc: 1.54, i: 646, p: "Charge" },
-            { t: 20, uc: 2.80, i: 520, p: "Charge" },
-            { t: 30, uc: 3.82, i: 418, p: "Charge" },
-            { t: 40, uc: 4.58, i: 342, p: "Charge" },
-            { t: 50, uc: 5.24, i: 276, p: "Charge" },
-            { t: 60, uc: 5.78, i: 221, p: "Charge" },
-            { t: 80, uc: 6.54, i: 146, p: "Charge" },
-            { t: 100, uc: 7.03, i: 97, p: "Charge" },
-            { t: 120, uc: 7.36, i: 64, p: "Charge" },
-            { t: 140, uc: 7.57, i: 43, p: "Charge" },
-            { t: 180, uc: 7.81, i: 19, p: "Charge" },
-            { t: 220, uc: 7.92, i: 8, p: "Charge" },
-            { t: 230, uc: 6.42, i: -641, p: "Décharge" },
-            { t: 240, uc: 5.16, i: -515, p: "Décharge" },
-            { t: 250, uc: 4.19, i: -418, p: "Décharge" },
-            { t: 260, uc: 3.39, i: -338, p: "Décharge" },
-            { t: 270, uc: 2.74, i: -273, p: "Décharge" },
-            { t: 300, uc: 1.45, i: -144, p: "Décharge" },
-            { t: 350, uc: 0.50, i: -50, p: "Décharge" },
-            { t: 400, uc: 0.17, i: -17, p: "Décharge" }
-        ];
+        // Données d'intensité fournies (en µA)
+        const iCharge = [800, 647, 523, 423, 342, 276, 223, 180, 146, 118, 95, 77, 62, 50, 41, 33, 27, 22, 18, 14, 12, 9, 7];
+        const iDecharge = [-641, -518, -419, -339, -274, -221, -179, -145, -117, -95, -77, -62, -50, -40, -33, -26, -21, -17, -14];
+
+        const R = 10000;
+        const E = 8;
+        const rawData = [];
+
+        // Construction du tableau de données avec calcul de Uc (Loi des mailles)
+        iCharge.forEach((val, idx) => {
+            const t = idx * 10;
+            const uc = E - (R * val * 1e-6);
+            rawData.push({ t, i: val, uc, p: "Charge" });
+        });
+
+        const offsetT = iCharge.length * 10;
+        iDecharge.forEach((val, idx) => {
+            const t = offsetT + (idx * 10);
+            const uc = - (R * val * 1e-6); // i est négatif, uc sera positif
+            rawData.push({ t, i: val, uc, p: "Décharge" });
+        });
 
         const rowT = document.getElementById('rowT');
         const rowUc = document.getElementById('rowUc');
@@ -235,7 +232,6 @@
             ucValues.push(d.uc);
             iValues.push(d.i);
 
-            // Remplissage horizontal du tableau (colonnes de données pour chaque ligne variable)
             rowT.innerHTML += `<td class="p-4 border-r border-slate-100 dark:border-slate-700 text-center font-medium min-w-[70px]">${d.t}</td>`;
             rowUc.innerHTML += `<td class="p-4 border-r border-slate-100 dark:border-slate-700 text-center text-blue-600 dark:text-blue-400 font-bold min-w-[70px]">${d.uc.toFixed(2)}</td>`;
             rowI.innerHTML += `<td class="p-4 border-r border-slate-100 dark:border-slate-700 text-center text-red-500 dark:text-red-400 min-w-[70px]">${d.i}</td>`;
